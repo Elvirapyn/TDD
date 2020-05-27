@@ -21,7 +21,7 @@ class NewVisitorTest(unittest.TestCase):
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('To-Do', header_text)
 
-		# She is invited to enter a to-do item straight away
+		#She is invited to enter a to-do item straight away
 		inputbox = self.browser.find_element_by_id('id_new_item')
 		self.assertEqual(inputbox.get_attribute('placeholder'),'Enter a to-do item')
 
@@ -33,12 +33,27 @@ class NewVisitorTest(unittest.TestCase):
 		time.sleep(1)
 
 		table = self.browser.find_element_by_id('id_list_table')
-		rows = table.find_element_by_tag_name('tr')
-		self.assertTrue(
-			any(row.text == '1:Buy peacock feature' for row in rows),
-						"New to-do item did not appear in table")
+		rows = table.find_elements_by_tag_name('tr')
+		# self.assertTrue(
+		# 	any(row.text == '1: Buy peacock feature' for row in rows),
+		# 				f"New to-do item did not appear in table. Content were:\n{table.text}")
+		self.assertTrue('1: Buy peacock feature',[row.text for row in rows])
 
 		#There is still a text box inviting her to add another item. She enters "Use peacock features to make a fly"
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		inputbox.send_keys('Use peacock feathers to make a fly')
+		inputbox.send_keys(Keys.ENTER)
+		time.sleep(1)
+
+		# The page updates again, and now shows both items on her list
+		table = self.browser.find_element_by_id('id_list_table')
+		rows = table.find_elements_by_tag_name('tr')
+		self.assertIn('1: Buy peacock feature', [row.text for row in rows])
+		self.assertIn('2: Use peacock features to make a fly', [row.text for row in rows])
+
+		# Edith wonders whether the site will remember her list. Then she sees that the site
+		# has generated a unique URL for her —— there is some explanatory text to that effect.
+
 		self.fail('Finish the test!')
 
 
